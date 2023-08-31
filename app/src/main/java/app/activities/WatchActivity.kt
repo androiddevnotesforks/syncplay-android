@@ -21,6 +21,7 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import app.BuildConfig
 import app.R
 import app.activities.WatchActivityUI.RoomUI
 import app.databinding.WatchActivityBinding
@@ -135,7 +136,8 @@ class WatchActivity : ComponentActivity(), ProtocolCallback {
         hideSystemUI(false)
         cutoutMode(true)
 
-        engine.value = runBlocking {
+        val flavor = BuildConfig.FLAVOR
+        engine.value = if (flavor == "noLibs") "exo" else runBlocking {
             DATASTORE_MISC_PREFS.obtainString(DataStoreKeys.MISC_PLAYER_ENGINE, "mpv")
         }
 

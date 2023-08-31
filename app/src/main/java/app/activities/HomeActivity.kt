@@ -100,6 +100,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
+import app.BuildConfig
 import app.R
 import app.compose.PopupAPropos.AProposPopup
 import app.datastore.DataStoreKeys.DATASTORE_GLOBAL_SETTINGS
@@ -718,55 +719,62 @@ class HomeActivity : ComponentActivity() {
 
 
                                 /* Switch player button */
-                                val player = DATASTORE_MISC_PREFS.ds().stringFlow(MISC_PLAYER_ENGINE, "mpv").collectAsState(initial = "mpv")
+                                val flavor = BuildConfig.FLAVOR
+                                val default = if (flavor == "noLibs") "exo" else "mpv"
+                                val player = DATASTORE_MISC_PREFS.ds().stringFlow(MISC_PLAYER_ENGINE, default).collectAsState(initial = default)
 
-                                Button(
-                                    border = BorderStroke(width = 2.dp, color = MaterialTheme.colorScheme.primary),
-                                    modifier = Modifier
-                                        .fillMaxWidth(0.7f)
-                                        .padding(8.dp),
-                                    onClick = {
-                                        lifecycleScope.launch {
-                                            DATASTORE_MISC_PREFS.ds().writeString(
-                                                MISC_PLAYER_ENGINE,
-                                                if (player.value == "exo") "mpv" else "exo"
-                                            )
+                                if (flavor == "withLibs") {
+                                    Button(
+                                        border = BorderStroke(
+                                            width = 2.dp,
+                                            color = MaterialTheme.colorScheme.primary
+                                        ),
+                                        modifier = Modifier
+                                            .fillMaxWidth(0.7f)
+                                            .padding(8.dp),
+                                        onClick = {
+                                            lifecycleScope.launch {
+                                                DATASTORE_MISC_PREFS.ds().writeString(
+                                                    MISC_PLAYER_ENGINE,
+                                                    if (player.value == "exo") "mpv" else "exo"
+                                                )
+                                            }
                                         }
-                                    }
-                                ) {
-                                    when (player.value) {
-                                        "exo" -> {
-                                            Image(
-                                                painter = painterResource(id = R.drawable.exoplayer),
-                                                contentDescription = "",
-                                                modifier = Modifier
-                                                    .size(24.dp)
-                                                    .padding(2.dp)
-                                            )
+                                    ) {
+                                        when (player.value) {
+                                            "exo" -> {
+                                                Image(
+                                                    painter = painterResource(id = R.drawable.exoplayer),
+                                                    contentDescription = "",
+                                                    modifier = Modifier
+                                                        .size(24.dp)
+                                                        .padding(2.dp)
+                                                )
 
-                                            Text(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                textAlign = TextAlign.Center,
-                                                text = stringResource(R.string.connect_button_switchplayer_exo),
-                                                fontSize = 10.sp
-                                            )
-                                        }
+                                                Text(
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    textAlign = TextAlign.Center,
+                                                    text = stringResource(R.string.connect_button_switchplayer_exo),
+                                                    fontSize = 10.sp
+                                                )
+                                            }
 
-                                        "mpv" -> {
-                                            Image(
-                                                painter = painterResource(id = R.drawable.mpv),
-                                                contentDescription = "",
-                                                modifier = Modifier
-                                                    .size(24.dp)
-                                                    .padding(2.dp)
-                                            )
+                                            "mpv" -> {
+                                                Image(
+                                                    painter = painterResource(id = R.drawable.mpv),
+                                                    contentDescription = "",
+                                                    modifier = Modifier
+                                                        .size(24.dp)
+                                                        .padding(2.dp)
+                                                )
 
-                                            Text(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                textAlign = TextAlign.Center,
-                                                text = stringResource(R.string.connect_button_switchplayer_mpv),
-                                                fontSize = 10.sp
-                                            )
+                                                Text(
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    textAlign = TextAlign.Center,
+                                                    text = stringResource(R.string.connect_button_switchplayer_mpv),
+                                                    fontSize = 10.sp
+                                                )
+                                            }
                                         }
                                     }
                                 }
